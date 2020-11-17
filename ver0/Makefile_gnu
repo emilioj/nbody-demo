@@ -10,14 +10,14 @@ SOURCES = GSimulation.cpp main.cpp
 .SUFFIXES: _O2.o .cpp
 
 ##########################################
-OBJSC = $(SOURCES:.cpp=_O0.o)
+OBJSC = $(SOURCES:.cpp=_O2.o)
 ##########################################
 
 EXEC=nbody.x_O2
 
 all: cpu
 
-%.o: %.cpp
+%_O2.o: %.cpp
 	$(info )
 	$(info Compiling the object file for CPU: )
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@

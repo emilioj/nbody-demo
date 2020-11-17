@@ -18,7 +18,7 @@ EXEC=nbody.x_O2
 
 all: clean cpu
 
-%.o: %.cpp
+%_O2.o: %.cpp
 	$(info )
 	$(info Compiling the object file for CPU: )
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
