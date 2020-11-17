@@ -1,0 +1,42 @@
+CXX = g++
+COMPFLAGS = -g -std=c++11 -Ofast -Wall -Wextra
+OPTFLAGS = -march=native
+REPFLAGS = -fopt-info-all-optall=$<_Ofast.optrpt
+INCLUDES =
+
+CXXFLAGS = $(COMPFLAGS) $(OPTFLAGS) $(REPFLAGS)
+
+SOURCES = GSimulation.cpp main.cpp
+
+.SUFFIXES: -Ofast.o .cpp
+
+##########################################
+OBJSC = $(SOURCES:.cpp=_Ofast.o)
+##########################################
+
+EXEC=nbody.x_Ofast
+
+all: clean cpu
+
+%_Ofast.o: %.cpp
+	$(info )
+	$(info Compiling the object file for CPU: )
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+cpu: $(OBJSC)
+	$(info )
+	$(info Linking the CPU executable:)
+	$(CXX) -o $(EXEC) $(OBJSC)
+
+run:
+	$(info )
+	$(info Run the default test case on CPU: )
+	./nbody.x_Ofast
+
+asm:GSimulation.cpp
+	$(info)
+	$(info Generate assembly code: )
+	$(CXX) $(COMPFLAGS) $(OPTFLAGS) $^ -S
+
+clean:
+	rm -f $(OBJSC) nbody.x_Ofast *.optrpt *.s

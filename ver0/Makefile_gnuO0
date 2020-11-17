@@ -1,0 +1,36 @@
+CXX = g++
+COMPFLAGS = -g -std=c++11 -O0 -Wall -Wextra
+
+INCLUDES =
+
+CXXFLAGS = $(COMPFLAGS)
+
+SOURCES = GSimulation.cpp main.cpp
+
+.SUFFIXES: _O0.o .cpp
+
+##########################################
+OBJSC = $(SOURCES:.cpp=_O0.o)
+##########################################
+
+EXEC=nbody.x_O0
+
+all: cpu
+
+%_O0.o: %.cpp
+	$(info )
+	$(info Compiling the object file for CPU: )
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+cpu: $(OBJSC)
+	$(info )
+	$(info Linking the CPU executable:)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(EXEC) $(OBJSC)
+
+run:
+	$(info )
+	$(info Run the default test case on CPU: )
+	./nbody.x_O0
+
+clean:
+	rm -f $(OBJSC) nbody.x_O0

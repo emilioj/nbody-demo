@@ -152,6 +152,7 @@ void GSimulation :: start()
        acc_ytile[s] = 0.0f;
        acc_ztile[s] = 0.0f;
      }
+#ifdef __INTEL_COMPILER
      __assume_aligned(particles->pos_x, alignment);
      __assume_aligned(particles->pos_y, alignment);
      __assume_aligned(particles->pos_z, alignment);
@@ -159,7 +160,15 @@ void GSimulation :: start()
      __assume_aligned(particles->acc_y, alignment);
      __assume_aligned(particles->acc_z, alignment);
      __assume_aligned(particles->mass, alignment);
-     
+#else //assume GCC
+     particles->pos_x = (float *) __builtin_assume_aligned(particles->pos_x, alignment);
+     particles->pos_y = (float *) __builtin_assume_aligned(particles->pos_y, alignment);
+     particles->pos_z = (float *) __builtin_assume_aligned(particles->pos_z, alignment);
+     particles->acc_x = (float *) __builtin_assume_aligned(particles->acc_x, alignment);
+     particles->acc_y = (float *) __builtin_assume_aligned(particles->acc_y, alignment);
+     particles->acc_z = (float *) __builtin_assume_aligned(particles->acc_z, alignment);
+     particles->mass = (float *) __builtin_assume_aligned(particles->mass, alignment);
+#endif
      real_type ax_i = particles->acc_x[i];
      real_type ay_i = particles->acc_y[i];
      real_type az_i = particles->acc_z[i];
