@@ -10,7 +10,7 @@ CXXFLAGS = $(COMPFLAGS) $(OPTFLAGS) $(REPFLAGS) $(OMPFLAGS)
 
 SOURCES = GSimulation.cpp main.cpp
 
-.SUFFIXES: -Ofast.o .cpp
+.SUFFIXES: _Ofast.o .cpp
 
 ##########################################
 OBJSC = $(SOURCES:.cpp=_Ofast.o)

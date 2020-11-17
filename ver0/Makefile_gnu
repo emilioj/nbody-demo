@@ -7,13 +7,13 @@ CXXFLAGS = $(COMPFLAGS)
 
 SOURCES = GSimulation.cpp main.cpp
 
-.SUFFIXES: .o .cpp
+.SUFFIXES: _O2.o .cpp
 
 ##########################################
-OBJSC = $(SOURCES:.cpp=.o)
+OBJSC = $(SOURCES:.cpp=_O0.o)
 ##########################################
 
-EXEC=nbody.x
+EXEC=nbody.x_O2
 
 all: cpu
 
