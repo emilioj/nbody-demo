@@ -1,30 +1,50 @@
-# Demo Session for Intel® Advisor and Intel® Compiler C++
-This is an example code based on a simple N-body simulation of a distribution of point masses placed
-at location r_1,...,r_N and have masses m_1,...,m_N. The position of the particles after a specified
-time is computed using a finite difference methods for ordinary differential equation.
+CODE and original text by Fabio Baruffa
+https://github.com/fbaru-dev/nbody-demo
+
+Adapted text by me, Emilio J. Padrón.
+
+This is an example code based on a simple N-body simulation of a
+distribution of point masses placed at location r_1,...,r_N and have
+masses m_1,...,m_N. The position of the particles after a specified
+time is computed using a finite difference methods for ordinary
+differential equation.
 
 ## Implementation
-For each particle the position, the velocity, the acceleration and the mass is stored in a C-like
-structure and for an N particles case, an array of this structure is allocated. This is the 
-simple data-structure which is very close to the physical representation of a particle mass.
-The file `Particle.hpp` contains the implementation of such data-structure.
 
-For each particle indexed by i, the accelearation is computed a_i = G*mj*(ri-rj)/|ri-rj|^3, which 
-value is used to update the velocity and position using the Euler integration scheme.
-Furthermore the total energy of the particles' group is computed.
-The file `GSimulation.cpp` contains the implementation of the algorithm.
+For each particle the position, the velocity, the acceleration and the
+mass is stored in a C-like structure and for an N particles case, an
+array of this structure is allocated. This is the simple
+data-structure which is very close to the physical representation of a
+particle mass.
+
+The file `Particle.hpp` contains the implementation of such
+data-structure.
+
+For each particle indexed by i, the accelearation is computed a_i =
+G*mj*(ri-rj)/|ri-rj|^3, which value is used to update the velocity and
+position using the Euler integration scheme.  Furthermore the total
+energy of the particles' group is computed.
+
+The file `GSimulation.cpp` contains the implementation of the
+algorithm.
 
 ## Directory structure of the Demo
-The demo consists of several directories, which correspond to the different
-optimization steps to take to enabling vectorization and OpenMP multi-threding of the code.
-Each directory has its onw makefile to compile and run the test case.
-To compiler the code type `make` and the run the simulation type `make run`.
-As benchmark, the simulation starts with 2000 particles and 500 integration steps. One can
-change the default giving the number of particles and the number of integration steps using
-the command line argument:
-`./nbody.x < # of particles> < # of integration>`
 
-Try to change the number of particles and observe how the performance changes.
+The demo consists of several directories, which correspond to the
+different optimization steps to take to enabling vectorization and
+OpenMP multi-threding of the code.
+
+Each directory has its onw makefile to compile and run the test case.
+To compiler the code type `make` and the run the simulation type `make
+run`.
+
+As benhmark, the simulation starts with 16000 particles and 10
+integration steps. One can change the default giving the number of
+particles and the number of integration steps using the command line
+argument: `./nbody.x < # of particles> < # of integration>`
+
+Try to change the number of particles and observe how the performance
+changes.
 
 ## Different versions
 To start the demo, go to the folder `ver0`, compile and run the test.
@@ -59,22 +79,23 @@ Run the default test case on CPU:
 ```
 
 On output is printed some useful information. Colomnwise: s is the
-number of steps; dt is the physical time taking into account the physical
-time integration step; kenery is the kinetic energy of the group of particles;
-time is the computational time taken till that time step; GFlops is the
-number of giga flops per second. 
-N.B. The GFlops is an estimation done by looking into the code and counting
-the number of math operations according to the algorithm. This is used only
-as standard metric for comparison. More realistic numbers can be measured
-in different way (Roofline model of Intel® Advisor).
+number of steps; dt is the physical time taking into account the
+physical time integration step; kenery is the kinetic energy of the
+group of particles; time is the computational time taken till that
+time step; GFlops is the number of giga flops per second.
 
-Following the five steps of code modernization, 
+N.B. The GFlops is an estimation done by looking into the code and
+counting the number of math operations according to the
+algorithm. This is used only as standard metric for comparison. More
+realistic numbers can be measured in different way (Roofline model of
+Intel® Advisor).
+
+Following the five steps of code modernization,
 https://software.intel.com/en-us/articles/what-is-code-modernization
 we can improve the performance of the code.
 
-- describe the Intel® Advisor result
-- compile the code with processor specific optimization: -xSSE4.2, -xAVX, -xCORE-AVX2, -xCORE-AVX512, -xMIC-AVX512
-- generate the compiler report and describe the different options: 
+- describe the Intel® Advisor result (other session, *not today*)
+- generate the compiler report and describe the different options:
 -  -qopt-report[=N]: default level is 2
 -  -qopt-report-phase=<vec,loop,openmp,...>: default is all
 -  -qopt-report-file=stdout | stderr | filename
@@ -82,36 +103,29 @@ we can improve the performance of the code.
 
 Then show how verbose is the compiler report and use filtering.
 
-### ver1 
-Solution of the ver0. The optimization are: -O2 -xAVX or higher. 
+Try it also with GCC using Makefile_gnu:
+```
+make -f Makefile_gnu
+```
+
+In the different versions, try to compare to a gcc version!
+
+### ver1
+Solution of the ver0. The optimization are: -O2 -xAVX or higher.
 The Makefile is the only difference. Here we generate higher vectorized code and
 produce the compiler report.
 One should run this version in the same way as before and:
 - show the new performance numbers
-- describe the Intel® Advisor result
-- generate the compiler report
-- explain FP conversions and precision of constants, variables and math functions
+- generate the compiler report and have a look
+- compare with GCC
+- disable vectorization in ICC with -no-vec and compare again!
 
 ### ver2
 Solution of the ver1. The difference is in the GSimulation.cpp file where the consistent
 computation with floats is made (constants and SQRT function).
 One should run this version in the same way as before and:
 - show the new performance numbers
-- describe the Intel® Advisor result
-- generate the compiler report
-- explain the remark #25085: Preprocess Loopnests: Moving Out Load and Store and 
-  remark #15415: vectorization support: non-unit strided load was generated for the variable
-  ....
-  remark #15300: LOOP WAS VECTORIZED
-  remark #15452: unmasked strided loads: 6 
-  remark #15475: --- begin vector cost summary ---
-  remark #15476: scalar cost: 115 
-  remark #15477: vector cost: 26.750 
-  remark #15478: estimated potential speedup: 4.070 
-  remark #15488: --- end vector cost summary ---
-  ....
-- explain vectorization gather/scatter
-- explain AoS and SoA differences
+- generate the compiler report and look at the auto-vectorization stuff
 
 ### ver3
 Solution of the ver2. The differences are in:
@@ -121,22 +135,13 @@ Solution of the ver2. The differences are in:
 
 One should run this version in the same way as before and:
 - show the new performance numbers
-- describe the Intel® Advisor result
-- generate the compiler report
-- explain the remark #15344: loop was not vectorized: vector dependence prevents vectorization
-  remark #15346: vector dependence: assumed ANTI dependence between ... and ...
-  remark #15346: vector dependence: assumed FLOW dependence between ... and ...
-- explain the vectorization and how much we gain using it
-- refer to the Intel® compiler autovectorization guide and explain the requirements
-  for autovectorization
-- explain #pragma simd
-- explain #pragma simd reduction
+- generate the compiler report and look at some of the vectorization remarks
 - modify in the `Makefile` the CXXFLAGS adding the OMPFLAGS at line 8, recompile and run
   remark #15301: OpenMP SIMD LOOP WAS VECTORIZED
 - at this point running the code shows wrong results (Warning with SIMD, be aware of the full control)
 - try to use #pragma simd reduction (solution in the file GSimulation-simd.cpp)
   NB rember that the simd reduction is not allowed on `particles->acc_x[i]`
-  Solution: 
+  Solution:
     - cp GSimulation.cpp GSimulation.cpp.bkp
     - cp GSimulation-simd.cpp GSimulation.cpp
   recompile and run
@@ -148,13 +153,9 @@ This is the clean solution of the ver3 after all modification done live in the
 previous session.
 One should run this version in the same way as before and:
 - show the new performance numbers
-- describe the Intel® Advisor result
-- generate the compiler report
-- explain remark #15389: vectorization support: reference ... has `unaligned` access 
-- explain the data alignment with examples and the alignment size (16/32/64 bytes)
-- exlpain peel and reminder loops
+- generate the compiler report and look at vectorization remarks regarding unaligned accesses
 
-## ver5
+### ver5
 This is the solution of the ver4, with all the allocations replaced by the memory
 alignment allocation function.
 Running this version allows to see that even modifing the memory allocation functions,
@@ -162,7 +163,6 @@ the data is not aligned. One needs to use the function `__assume_aligned(...)`.
 Recompile the code adding the option: -DASALIGN.
 One should run again this version with the alignment option and:
 - show the new performance numbers
-- describe the Intel® Advisor result
 - generate the compiler report
 
 This concludes the basic vectorization part of the demo.
@@ -174,9 +174,7 @@ At this point, only two topics are missing:
 This is the cache optimized version of the code, without OpenMP.
 The performance depends on the size of the tile and the number or particles.
 One should run again this version and:
-- describe in detail what is this kind of optimization and how depends on the tile size
 - show the new performance numbers
-- describe the Intel® Advisor result
 - generate the compiler report
 
 ### ver7
