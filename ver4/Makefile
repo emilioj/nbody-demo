@@ -41,7 +41,7 @@ asm:GSimulation.cpp
 	$(CXX) $(COMPFLAGS) $(OPTFLAGS) $^ -S
 
 clean:
-	rm -f $(OBJSC) nbody.x *.optrpt *.s
+	rm -f $(OBJSC) ${EXEC} *.optrpt *.s
 
 
 #----------------------------------------------------------------

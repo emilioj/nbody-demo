@@ -33,4 +33,4 @@ run:
 	./nbody.x_O0
 
 clean:
-	rm -f $(OBJSC) nbody.x_O0
+	rm -f $(OBJSC) ${EXEC}
